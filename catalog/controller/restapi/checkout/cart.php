@@ -1,11 +1,12 @@
 <?php
 
-class ControllerRestApiCheckoutCart extends Controller {
+class ControllerRestApiCheckoutCart extends Controller
+{
 
-    public function index() {
+    public function index()
+    {
         $this->load->language('checkout/cart');
 
-        
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
@@ -80,7 +81,7 @@ class ControllerRestApiCheckoutCart extends Controller {
 
                     $option_data[] = array(
                         'name' => $option['name'],
-                        'value' => (utf8_strlen($value) > 20 ? utf8_substr($value, 0, 20) . '..' : $value)
+                        'value' => (utf8_strlen($value) > 20 ? utf8_substr($value, 0, 20) . '..' : $value),
                     );
                 }
 
@@ -103,7 +104,7 @@ class ControllerRestApiCheckoutCart extends Controller {
                         'week' => $this->language->get('text_week'),
                         'semi_month' => $this->language->get('text_semi_month'),
                         'month' => $this->language->get('text_month'),
-                        'year' => $this->language->get('text_year')
+                        'year' => $this->language->get('text_year'),
                     );
 
                     if ($product['recurring']['trial']) {
@@ -129,7 +130,7 @@ class ControllerRestApiCheckoutCart extends Controller {
                     'reward' => ($product['reward'] ? sprintf($this->language->get('text_points'), $product['reward']) : ''),
                     'price' => $price,
                     'total' => $total,
-                    'href' => $this->url->link('product/product', 'product_id=' . $product['product_id'])
+                    'href' => $this->url->link('product/product', 'product_id=' . $product['product_id']),
                 );
             }
 
@@ -142,7 +143,7 @@ class ControllerRestApiCheckoutCart extends Controller {
                         'key' => $key,
                         'description' => $voucher['description'],
                         'amount' => $this->currency->format($voucher['amount'], $this->session->data['currency']),
-                        'remove' => $this->url->link('checkout/cart', 'remove=' . $key)
+                        'remove' => $this->url->link('checkout/cart', 'remove=' . $key),
                     );
                 }
             }
@@ -154,11 +155,11 @@ class ControllerRestApiCheckoutCart extends Controller {
             $taxes = $this->cart->getTaxes();
             $total = 0;
 
-            // Because __call can not keep var references so we put them into an array. 			
+            // Because __call can not keep var references so we put them into an array.
             $total_data = array(
                 'totals' => &$totals,
                 'taxes' => &$taxes,
-                'total' => &$total
+                'total' => &$total,
             );
 
             // Display prices
@@ -191,27 +192,27 @@ class ControllerRestApiCheckoutCart extends Controller {
                 array_multisort($sort_order, SORT_ASC, $totals);
             }
 
-
             $data['totals'] = array();
 
             foreach ($totals as $total) {
                 $data['totals'][] = array(
                     'title' => $total['title'],
-                    'text' => $this->currency->format($total['value'], $this->session->data['currency'])
+                    'text' => $this->currency->format($total['value'], $this->session->data['currency']),
                 );
             }
 
-            $data['status'] = TRUE;
+            $data['status'] = true;
         } else {
             $data['text_error'] = $this->language->get('text_empty');
-            $data['status'] = FALSE;
+            $data['status'] = false;
         }
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($data));
     }
 
-    public function add() {
+    public function add()
+    {
         $this->load->language('checkout/cart');
 
         $json = array();
@@ -288,11 +289,11 @@ class ControllerRestApiCheckoutCart extends Controller {
                 $taxes = $this->cart->getTaxes();
                 $total = 0;
 
-                // Because __call can not keep var references so we put them into an array. 			
+                // Because __call can not keep var references so we put them into an array.
                 $total_data = array(
                     'totals' => &$totals,
                     'taxes' => &$taxes,
-                    'total' => &$total
+                    'total' => &$total,
                 );
 
                 // Display prices
@@ -328,16 +329,17 @@ class ControllerRestApiCheckoutCart extends Controller {
                 $json['total'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total, $this->session->data['currency']));
             }
 
-            $json['status'] = TRUE;
+            $json['status'] = true;
         } else {
-            $json['status'] = FALSE;
+            $json['status'] = false;
         }
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
     }
 
-    public function edit() {
+    public function edit()
+    {
         $this->load->language('checkout/cart');
 
         $json = array();
@@ -357,16 +359,17 @@ class ControllerRestApiCheckoutCart extends Controller {
             unset($this->session->data['payment_methods']);
             unset($this->session->data['reward']);
 
-            $json['status'] = TRUE;
+            $json['status'] = true;
         } else {
-            $json['status'] = FALSE;
+            $json['status'] = false;
         }
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
     }
 
-    public function remove() {
+    public function remove()
+    {
         $this->load->language('checkout/cart');
 
         $json = array();
@@ -394,11 +397,11 @@ class ControllerRestApiCheckoutCart extends Controller {
             $taxes = $this->cart->getTaxes();
             $total = 0;
 
-            // Because __call can not keep var references so we put them into an array. 			
+            // Because __call can not keep var references so we put them into an array.
             $total_data = array(
                 'totals' => &$totals,
                 'taxes' => &$taxes,
-                'total' => &$total
+                'total' => &$total,
             );
 
             // Display prices
@@ -433,9 +436,9 @@ class ControllerRestApiCheckoutCart extends Controller {
 
             $json['total'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total, $this->session->data['currency']));
 
-            $json['status'] = TRUE;
+            $json['status'] = true;
         } else {
-            $json['status'] = FALSE;
+            $json['status'] = false;
         }
 
         $this->response->addHeader('Content-Type: application/json');
