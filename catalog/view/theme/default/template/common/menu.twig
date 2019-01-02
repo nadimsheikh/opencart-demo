@@ -1,0 +1,110 @@
+{% if categories %}
+    
+        <nav class="navbar navbar-inverse">
+            <div class="navbar-header">
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                    <span class="sr-only">{{ text_category }}</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="">{{ text_home }}</a>
+            </div>
+
+            <div class="collapse navbar-collapse js-navbar-collapse">
+                <ul class="nav navbar-nav">
+                    {% for category in categories %}
+                        {% if category.children %}                            
+                            <li class="dropdown mega-dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ category.name }} <span class="caret"></span></a>				
+                                <ul class="dropdown-menu mega-dropdown-menu">
+
+                                    <li class="col-sm-8">
+                                        <ul>
+                                            {% for child in category.children %}
+                                                {% if child.gchildren %}
+                                                    <li class="col-sm-3">
+                                                        <ul>
+                                                            <li class="dropdown-header"><a href="{{ child.href }}">{{ child.name }}</a></li>
+                                                            <div>
+                                                                {% if child.image %}							
+                                                                    <div class="image"><img src="{{ child.image }}" alt="{{ child.name }}" /></div>
+                                                                    {% endif %}                                                            
+                                                            </div>
+                                                            {% for gchild in child.gchildren %}
+                                                                <li>
+                                                                    <a href="{{ gchild.href }}">{{ gchild.name }}</a>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="col-sm-3">
+                                                        <ul>
+                                                            <li class="dropdown-header"><a href="{{ child.href }}">{{ child.name }}</a></li>    
+                                                            <div>
+                                                                {% if child.image %}							
+                                                                    <div class="image"><img src="{{ child.image }}" alt="{{ child.name }}" /></div>
+                                                                    {% endif %}                                                            
+                                                            </div>
+                                                        </ul>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                    <li class="col-sm-4">
+                                        <ul>
+                                            <li class="dropdown-header">{{ category.name }}</li>                            
+                                            <div>
+                                                {% if category.image %}							
+                                                    <div class="image"><img src="{{ category.image }}" alt="{{ category.name }}" /></div>
+                                                    {% endif %}
+                                                    {% if category.description %}
+                                                        {{ category.description }}
+                                                    {% endif %}
+                                            </div>
+                                            <li class="divider"></li>
+                                            <li><a href="{{ category.href }}">{{ text_all }} <span class="glyphicon glyphicon-chevron-right pull-right"></span></a></li>
+                                        </ul>
+                                    </li>
+                                </ul>				
+                            </li>
+                        {% else %}
+                            <li><a href="{{ category.href }}">{{ category.name }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    
+                    {% if manufacturers %}
+                        <li class="dropdown mega-dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ text_manufacturers }}<span class="caret"></span></a>				
+                            <ul class="dropdown-menu mega-dropdown-menu">                       
+                                {% for manufacturer in manufacturers %}
+                                    <li class="col-sm-3"><a href="{{ manufacturer.href }}">{{ manufacturer.name }}</a></li>
+                                    {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                    
+                    <li><a href="{{ special }}">{{ text_special }}</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    
+
+                    {% if informations %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ text_information }}<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                {% for information in informations %}
+                                    <li><a href="{{ information.href }}">{{ information.title }}</a></li>
+                                    {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    <li><a href="{{ contact }}">{{ text_contact }}</a></li>
+                </ul>
+            </div><!-- /.nav-collapse -->
+        </nav>
+   
+{% endif %} 

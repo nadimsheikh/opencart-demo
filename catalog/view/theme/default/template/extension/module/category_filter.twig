@@ -1,0 +1,70 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ heading_title }}</h3>        
+    </div>
+    <div class="panel-body">      
+        {% if categories %}
+            {% for category in categories %}
+                <div class="checkbox">
+                    <label>
+                        {% if category.checked %}
+                            <input name="categoryFilter[]" type="checkbox" checked value="{{ category.category_id }}">
+                        {% else %}
+                            <input name="categoryFilter[]" type="checkbox" value="{{ category.category_id }}">
+                        {% endif %}
+
+                        {{ category.name }}</label>
+                </div>                       
+
+                {% if category.children %}
+                    {% for children in category.children %}                        
+                        <div class="checkbox">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>                                
+
+                                {% if children.checked %}
+                                    <input name="categoryFilter[]" type="checkbox" checked value="{{ children.category_id }}">
+                                {% else %}
+                                    <input name="categoryFilter[]" type="checkbox" value="{{ children.category_id }}">
+                                {% endif %}
+
+                                {{ children.name }}</label>
+                        </div>                       
+
+                        {% if children.children %}
+                            {% for children2 in children.children %}                        
+                                <div class="checkbox">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>
+
+                                        {% if children2.checked %}
+                                            <input name="categoryFilter[]" type="checkbox" checked value="{{ children2.category_id }}">
+                                        {% else %}
+                                            <input name="categoryFilter[]" type="checkbox" value="{{ children2.category_id }}">
+                                        {% endif %}
+
+                                        {{ children2.name }}</label>
+                                </div>                       
+                            {% endfor %}
+                        {% endif %}
+
+                    {% endfor %}
+                {% endif %}
+
+            {% endfor %}
+
+            <button class="btn btn-block btn-default" id="categoryFilterBtn">Filter</button>
+        {% endif %}       
+    </div>
+</div>
+
+<script>
+     $('#categoryFilterBtn').click(function () {
+        var fav = [];
+        $.each($("input[name='categoryFilter[]']:checked"), function () {
+            fav.push($(this).val());
+        });
+        if (fav) {
+            category_filter = "&category_filter=" + fav;
+            location = "{{ action }}" + category_filter;
+        }
+    });
+</script>

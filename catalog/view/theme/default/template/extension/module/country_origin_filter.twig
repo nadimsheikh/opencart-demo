@@ -1,0 +1,35 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ heading_title }}</h3>        
+    </div>
+    <div class="panel-body">      
+        {% if country_origins %}
+            {% for country_origin in country_origins %}
+
+                <div class="checkbox">
+                    {% if country_origin.checked %}
+                        <label><input name="country_originFilter[]" checked type="checkbox" value="{{ country_origin.country_origin_id }}">{{ country_origin.name }}</label>
+                        {% else %}
+                        <label><input name="country_originFilter[]" type="checkbox" value="{{ country_origin.country_origin_id }}">{{ country_origin.name }}</label>
+                        {% endif %}
+                </div>
+
+            {% endfor %}
+
+            <button class="btn btn-block btn-default" id="countryOriginFilterBtn">Filter</button>
+        {% endif %}       
+    </div>
+</div>
+
+<script>
+    $('#countryOriginFilterBtn').click(function () {
+        var fav = [];
+        $.each($("input[name='country_originFilter[]']:checked"), function () {
+            fav.push($(this).val());
+        });
+        if (fav) {
+            country_origin_filter = "&country_origin_filter=" + fav;
+            location = "{{ action }}" + country_origin_filter;
+        }
+    });
+</script>

@@ -1,0 +1,43 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ heading_title }}</h3>        
+    </div>
+    <div class="panel-body">      
+        {% if categories %}
+            {% for category in categories %}
+
+                <h4>{{ category.name }}</h4>
+
+                {% if category.manufacturer %}
+                    {% for manufacturers in category.manufacturer|batch(4) %}                        
+                        {% for manufacturer in manufacturers %}
+                            <div class="checkbox">
+                                {% if manufacturer.checked %}
+                                    <label><input name="brandFilter[]" checked type="checkbox" value="{{ manufacturer.manufacturer_id }}">{{ manufacturer.name }}</label>
+                                    {% else %}
+                                    <label><input name="brandFilter[]" type="checkbox" value="{{ manufacturer.manufacturer_id }}">{{ manufacturer.name }}</label>
+                                    {% endif %}
+                            </div>
+                        {% endfor %}                         
+                    {% endfor %}
+                {% endif %}
+
+            {% endfor %}
+
+            <button class="btn btn-block btn-default" id="brandFilterBtn">Filter</button>
+        {% endif %}       
+    </div>
+</div>
+
+<script>
+    $('#brandFilterBtn').click(function () {
+        var fav = [];
+        $.each($("input[name='brandFilter[]']:checked"), function () {
+            fav.push($(this).val());
+        });
+        if (fav) {
+            brand_filter = "&brand_filter=" + fav;
+            location = "{{ action }}" + brand_filter;
+        }
+    });
+</script>

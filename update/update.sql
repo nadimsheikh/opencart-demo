@@ -1,0 +1,1 @@
+ALTER TABLE `oc_product` ADD `country_origin_id` INT NOT NULL AFTER `manufacturer_id`;

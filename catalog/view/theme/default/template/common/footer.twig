@@ -1,0 +1,90 @@
+<footer>
+    <div class="container">
+        <div class="row">      
+            <div class="col-sm-3">
+                <h5>{{ text_service }}</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ contact }}">{{ text_contact }}</a></li>
+                    <li><a href="{{ return }}">{{ text_return }}</a></li>
+                    <li><a href="{{ sitemap }}">{{ text_sitemap }}</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-3">
+                <h5>{{ text_information }}</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ manufacturer }}">{{ text_manufacturers }}</a></li>
+                    {#<li><a href="{{ voucher }}">{{ text_voucher }}</a></li>#}
+                    <li><a href="{{ affiliate }}">{{ text_affiliate }}</a></li>
+                    <li><a href="{{ special }}">{{ text_special }}</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-3">
+                <h5>{{ text_account }}</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ account }}">{{ text_account }}</a></li>
+                    <li><a href="{{ order }}">{{ text_order }}</a></li>
+                    <li><a href="{{ wishlist }}">{{ text_wishlist }}</a></li>
+                    <li><a href="{{ newsletter }}">{{ text_newsletter }}</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-3">
+                <h5>{{ text_social }}</h5>
+                <div class="pull-right">
+                    <img style="margin-top: -20px;" class="img-responsive" src="image/catalog/website/SecuredTag.png" alt=""/>                    
+                </div>
+                <div class="pull-left">            
+                    <div>
+                        <img src="image/catalog/website/Social-Media-Logos/Twitter.png" alt=""/>                                                
+                        <img src="image/catalog/website/Social-Media-Logos/Pintrest.png" alt=""/>                        
+                        <img src="image/catalog/website/Social-Media-Logos/Facebook.png" alt=""/>
+                    </div>
+                    <div style="margin-top: 5px;">                        
+                        <img src="image/catalog/website/Social-Media-Logos/G+.png" alt=""/>                        
+                        <img src="image/catalog/website/Social-Media-Logos/Instagram.png" alt=""/>                        
+                        <img src="image/catalog/website/Social-Media-Logos/Linkdin.png" alt=""/>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>    
+</footer>
+
+<div class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9">
+                <div class="links">
+                    {% if informations %}
+                        {% for information in informations %}
+                            <a href="{{ information.href }}">{{ information.title }}</a> |
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <p>{{ powered }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for script in scripts %}
+    <script src="{{ script }}" type="text/javascript"></script>
+{% endfor %}
+
+
+
+<!--
+OpenCart is open source software and you are free to remove the powered by OpenCart if you want, but its generally accepted practise to make a small donation.
+Please donate via PayPal to donate@opencart.com
+//-->
+
+
+<script>
+    console.log(window.screen.availWidth);
+    console.log(window.screen.availHeight);
+</script>
+</body></html>
