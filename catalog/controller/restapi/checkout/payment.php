@@ -2,11 +2,22 @@
 
 class ControllerRestApiCheckoutPayment extends Controller {
 
-    public function address() {
-        $this->load->language('api/payment');
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function address() {
+        $this->load->language('api/payment');
+       
         // Delete old payment address, payment methods and method so not to cause any issues if there is an error
         unset($this->session->data['payment_address']);
         unset($this->session->data['payment_methods']);
@@ -133,7 +144,7 @@ class ControllerRestApiCheckoutPayment extends Controller {
 
             unset($this->session->data['payment_method']);
             unset($this->session->data['payment_methods']);
-        }else{
+        } else {
             $json['status'] = FALSE;
         }
 
@@ -143,9 +154,7 @@ class ControllerRestApiCheckoutPayment extends Controller {
 
     public function methods() {
         $this->load->language('api/payment');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+       
         // Delete past shipping methods and method just in case there is an error
         unset($this->session->data['payment_methods']);
         unset($this->session->data['payment_method']);
@@ -227,7 +236,7 @@ class ControllerRestApiCheckoutPayment extends Controller {
             array_multisort($sort_order, SORT_ASC, $json['payment_methods']);
 
             $json['status'] = TRUE;
-            
+
             if ($json['payment_methods']) {
                 $json['status'] = TRUE;
                 $this->session->data['payment_methods'] = $json['payment_methods'];
@@ -235,7 +244,7 @@ class ControllerRestApiCheckoutPayment extends Controller {
                 $json['status'] = FALSE;
                 $json['error'] = $this->language->get('error_no_payment');
             }
-        }else{
+        } else {
             $json['status'] = TRUE;
         }
 
@@ -246,9 +255,7 @@ class ControllerRestApiCheckoutPayment extends Controller {
 
     public function method() {
         $this->load->language('api/payment');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+      
         // Delete old payment method so not to cause any issues if there is an error
         unset($this->session->data['payment_method']);
 
@@ -273,7 +280,7 @@ class ControllerRestApiCheckoutPayment extends Controller {
             $this->session->data['payment_method'] = $this->session->data['payment_methods'][$this->request->post['payment_method']];
             $json['status'] = TRUE;
             $json['success'] = $this->language->get('text_method');
-        }else{
+        } else {
             $json['status'] = FALSE;
         }
 

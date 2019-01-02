@@ -2,6 +2,19 @@
 
 class ControllerRestApiProductPriceSlider extends Controller {
 
+    public function __construct($registry) {
+        parent::__construct($registry);
+        if (isset($this->request->post['customer_id'])) {
+            $this->customer->setId($this->request->post['customer_id']);
+        }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
     public function index() {
 
         $this->load->language('extension/module/price_slider');
@@ -54,8 +67,8 @@ class ControllerRestApiProductPriceSlider extends Controller {
                     }
                 }
             }
-           
-            $data['status'] = TRUE; 
+
+            $data['status'] = TRUE;
             $data['price_slider_title'] = $this->config->get('module_price_slider_heading');
 
             if (!$min_max) {
@@ -71,7 +84,7 @@ class ControllerRestApiProductPriceSlider extends Controller {
             $data['price_min'] = $this->currency->format($range[0], $this->session->data['currency']);
             $data['price_max'] = $this->currency->format($range[1], $this->session->data['currency']);
         } else {
-            $data['status'] = FALSE;            
+            $data['status'] = FALSE;
         }
 
         $this->response->addHeader('Content-Type: application/json');

@@ -4,10 +4,21 @@ class ControllerRestApiAccountForgotten extends Controller {
 
     private $error = array();
 
-    public function index() {
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function index() {
+        
 
         $this->load->language('account/forgotten');
 

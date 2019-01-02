@@ -2,11 +2,21 @@
 
 class ControllerRestApiAccountOrder extends Controller {
 
-    public function index() {
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
 
+    public function index() {
+        
         $this->load->language('account/order');
 
         $url = '';
@@ -68,10 +78,6 @@ class ControllerRestApiAccountOrder extends Controller {
             $order_id = $this->request->get['order_id'];
         } else {
             $order_id = 0;
-        }
-
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
         }
 
         $this->load->model('account/order');
@@ -331,5 +337,5 @@ class ControllerRestApiAccountOrder extends Controller {
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($data));
     }
-   
+
 }

@@ -13,7 +13,7 @@ class ControllerRestApiProductLanguage extends Controller {
 
         $results = $this->model_localisation_language->getLanguages();
 
-        if ($results) {            
+        if ($results) {
             foreach ($results as $result) {
                 if ($result['status']) {
                     $data['languages'][] = array(
@@ -36,7 +36,7 @@ class ControllerRestApiProductLanguage extends Controller {
         $data['status'] = TRUE;
         if (isset($this->request->post['code'])) {
             $this->session->data['language'] = $this->request->post['code'];
-        }else{
+        } else {
             $data['status'] = FALSE;
         }
 

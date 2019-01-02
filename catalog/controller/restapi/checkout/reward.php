@@ -2,11 +2,22 @@
 
 class ControllerRestApiCheckoutReward extends Controller {
 
-    public function index() {
-        $this->load->language('api/reward');
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function index() {
+        $this->load->language('api/reward');
+
         // Delete past reward in case there is an error
         unset($this->session->data['reward']);
 
@@ -50,9 +61,7 @@ class ControllerRestApiCheckoutReward extends Controller {
 
     public function maximum() {
         $this->load->language('api/reward');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+
         $json = array();
 
         $json['maximum'] = 0;
@@ -74,9 +83,7 @@ class ControllerRestApiCheckoutReward extends Controller {
 
     public function available() {
         $this->load->language('api/reward');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+
         $json = array();
         $json['status'] = TRUE;
         $json['points'] = $this->customer->getRewardPoints();

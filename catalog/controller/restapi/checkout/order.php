@@ -2,13 +2,24 @@
 
 class ControllerRestApiCheckoutOrder extends Controller {
 
+    public function __construct($registry) {
+        parent::__construct($registry);
+        if (isset($this->request->post['customer_id'])) {
+            $this->customer->setId($this->request->post['customer_id']);
+        }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+    
     public function add() {
         $this->load->language('api/order');
 
         $json = array();
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+        
         // Customer
         if (!isset($this->session->data['customer'])) {
             $json['error'] = $this->language->get('error_customer');
@@ -369,9 +380,7 @@ class ControllerRestApiCheckoutOrder extends Controller {
         $this->load->language('api/order');
 
         $json = array();
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+      
         $this->load->model('checkout/order');
 
         if (isset($this->request->post['order_id'])) {
@@ -710,9 +719,7 @@ class ControllerRestApiCheckoutOrder extends Controller {
         $json = array();
 
         $this->load->model('checkout/order');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+      
         if (isset($this->request->get['order_id'])) {
             $order_id = $this->request->get['order_id'];
         } else {
@@ -740,9 +747,7 @@ class ControllerRestApiCheckoutOrder extends Controller {
 
         $json = array();
 
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+       
         $this->load->model('checkout/order');
 
         if (isset($this->request->get['order_id'])) {
@@ -769,9 +774,7 @@ class ControllerRestApiCheckoutOrder extends Controller {
 
     public function history() {
         $this->load->language('api/order');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+     
         $json = array();
 
         // Add keys for missing post vars

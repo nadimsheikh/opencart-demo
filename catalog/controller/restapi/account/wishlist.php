@@ -2,10 +2,20 @@
 
 class ControllerRestApiAccountWishList extends Controller {
 
-    public function index() {
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function index() {       
 
         $this->load->language('account/wishlist');
 
@@ -76,11 +86,7 @@ class ControllerRestApiAccountWishList extends Controller {
     public function add() {
         $this->load->language('account/wishlist');
 
-        $json = array();
-
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+        $json = array();      
 
         if (isset($this->request->post['product_id'])) {
             $product_id = $this->request->post['product_id'];
@@ -117,9 +123,7 @@ class ControllerRestApiAccountWishList extends Controller {
         $this->load->model('account/wishlist');
         $data = array();
 
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+        
 
         if (isset($this->request->post['product_id'])) {
             // Remove Wishlist
@@ -127,7 +131,7 @@ class ControllerRestApiAccountWishList extends Controller {
 
             $data['success'] = $this->language->get('text_remove');
             $data['status'] = TRUE;
-        }else{
+        } else {
             $data['status'] = FALSE;
         }
         $this->response->addHeader('Content-Type: application/json');

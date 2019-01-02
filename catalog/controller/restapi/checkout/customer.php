@@ -2,15 +2,24 @@
 
 class ControllerRestApiCheckoutCustomer extends Controller {
 
-    public function index() {
-        $this->load->language('api/payment');
-        
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
-       
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function index() {
+        $this->load->language('api/payment');       
+
         unset($this->session->data['customer']);
-       
+
 
         $json = array();
 
@@ -33,15 +42,15 @@ class ControllerRestApiCheckoutCustomer extends Controller {
 
 
         if (!$json) {
-          
+
             $this->session->data['customer'] = array(
                 'firstname' => $this->request->post['firstname'],
                 'lastname' => $this->request->post['lastname'],
                 'email' => $this->request->post['email'],
-                'telephone' => $this->request->post['telephone'],                          
+                'telephone' => $this->request->post['telephone'],
             );
             $json['status'] = TRUE;
-            $json['success'] = $this->language->get('text_address');            
+            $json['success'] = $this->language->get('text_address');
         } else {
             $json['status'] = FALSE;
         }
@@ -49,5 +58,5 @@ class ControllerRestApiCheckoutCustomer extends Controller {
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
     }
-   
+
 }

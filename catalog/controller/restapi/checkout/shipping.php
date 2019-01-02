@@ -2,11 +2,22 @@
 
 class ControllerRestApiCheckoutShipping extends Controller {
 
-    public function address() {
-        $this->load->language('api/shipping');
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function address() {
+        $this->load->language('api/shipping');
+       
         // Delete old shipping address, shipping methods and method so not to cause any issues if there is an error
         unset($this->session->data['shipping_address']);
         unset($this->session->data['shipping_methods']);
@@ -81,7 +92,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
                     }
                 }
             }
-            
+
             if (!$json) {
                 $this->load->model('localisation/country');
 
@@ -150,9 +161,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
 
     public function methods() {
         $this->load->language('api/shipping');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+        
         // Delete past shipping methods and method just in case there is an error
         unset($this->session->data['shipping_methods']);
         unset($this->session->data['shipping_method']);
@@ -163,7 +172,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
             if (!isset($this->session->data['shipping_address'])) {
                 $json['error'] = $this->language->get('error_address');
             }
-           
+
             if (!$json) {
                 // Shipping Methods
                 $json['shipping_methods'] = array();
@@ -217,9 +226,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
 
     public function method() {
         $this->load->language('api/shipping');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+       
         // Delete old shipping method so not to cause any issues if there is an error
         unset($this->session->data['shipping_method']);
 
@@ -244,7 +251,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
                     $json['error'] = $this->language->get('error_method');
                 }
             }
-           
+
             if (!$json) {
                 $this->session->data['shipping_method'] = $this->session->data['shipping_methods'][$shipping[0]]['quote'][$shipping[1]];
                 $json['status'] = TRUE;

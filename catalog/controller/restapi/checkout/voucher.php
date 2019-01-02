@@ -2,11 +2,22 @@
 
 class ControllerRestApiCheckoutVoucher extends Controller {
 
-    public function index() {
-        $this->load->language('api/voucher');
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function index() {
+        $this->load->language('api/voucher');
+        
         // Delete past voucher in case there is an error
         unset($this->session->data['voucher']);
 
@@ -39,9 +50,7 @@ class ControllerRestApiCheckoutVoucher extends Controller {
 
     public function add() {
         $this->load->language('api/voucher');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+       
         $json = array();
 
         // Add keys for missing post vars

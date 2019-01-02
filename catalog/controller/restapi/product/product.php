@@ -4,12 +4,21 @@ class ControllerRestApiProductProduct extends Controller {
 
     private $error = array();
 
-    public function index() {
-        $this->load->language('product/product');
-
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function index() {
+        $this->load->language('product/product');
 
         if (isset($this->request->get['product_id'])) {
             $product_id = (int) $this->request->get['product_id'];
@@ -253,9 +262,7 @@ class ControllerRestApiProductProduct extends Controller {
 
     public function review() {
         $this->load->language('product/product');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+
         $this->load->model('catalog/review');
 
         if (isset($this->request->get['page'])) {
@@ -301,9 +308,7 @@ class ControllerRestApiProductProduct extends Controller {
 
     public function write() {
         $this->load->language('product/product');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+
         $json = array();
 
         if ($this->request->server['REQUEST_METHOD'] == 'POST') {
@@ -347,11 +352,8 @@ class ControllerRestApiProductProduct extends Controller {
     public function getRecurringDescription() {
         $this->load->language('product/product');
         $this->load->model('catalog/product');
-        
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
-        
+
+
         if (isset($this->request->post['product_id'])) {
             $product_id = $this->request->post['product_id'];
         } else {

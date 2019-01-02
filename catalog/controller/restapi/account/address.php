@@ -4,10 +4,20 @@ class ControllerRestApiAccountAddress extends Controller {
 
     private $error = array();
 
-    public function index() {
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
+    public function index() {        
 
         $this->load->language('account/address');
 
@@ -17,9 +27,7 @@ class ControllerRestApiAccountAddress extends Controller {
     }
 
     public function add() {
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+       
         $this->load->language('account/address');
 
         $this->load->model('account/address');
@@ -85,10 +93,7 @@ class ControllerRestApiAccountAddress extends Controller {
     }
 
     public function edit() {
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
-
+      
         $this->load->language('account/address');
 
         $this->load->model('account/address');
@@ -169,9 +174,7 @@ class ControllerRestApiAccountAddress extends Controller {
     }
 
     public function delete() {
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+      
 
         $this->load->language('account/address');
 
@@ -269,9 +272,7 @@ class ControllerRestApiAccountAddress extends Controller {
         $this->load->language('account/address');
 
         $this->load->model('account/address');
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+      
 
         $address_info = $this->model_account_address->getAddress($this->request->get['address_id']);
 
