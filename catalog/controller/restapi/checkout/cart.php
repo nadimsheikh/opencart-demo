@@ -1,15 +1,17 @@
 <?php
 
-class ControllerRestApiCheckoutCart extends Controller
-{
+class ControllerRestApiCheckoutCart extends Controller {
 
-    public function index()
-    {
-        $this->load->language('checkout/cart');
-
+    public function __construct($registry) {
+        parent::__construct($registry);
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
+            $this->session->start();
         }
+    }
+
+    public function index() {
+        $this->load->language('checkout/cart');
 
         if ($this->cart->hasProducts() || !empty($this->session->data['vouchers'])) {
             if (!$this->cart->hasStock() && (!$this->config->get('config_stock_checkout') || $this->config->get('config_stock_warning'))) {
@@ -211,14 +213,11 @@ class ControllerRestApiCheckoutCart extends Controller
         $this->response->setOutput(json_encode($data));
     }
 
-    public function add()
-    {
+    public function add() {
         $this->load->language('checkout/cart');
 
         $json = array();
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+
 
         if (isset($this->request->post['product_id'])) {
             $product_id = (int) $this->request->post['product_id'];
@@ -338,14 +337,11 @@ class ControllerRestApiCheckoutCart extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
-    public function edit()
-    {
+    public function edit() {
         $this->load->language('checkout/cart');
 
         $json = array();
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+
         // Update
         if (!empty($this->request->post['quantity']) && !empty($this->request->post['key'])) {
 
@@ -368,14 +364,11 @@ class ControllerRestApiCheckoutCart extends Controller
         $this->response->setOutput(json_encode($json));
     }
 
-    public function remove()
-    {
+    public function remove() {
         $this->load->language('checkout/cart');
 
         $json = array();
-        if (isset($this->request->post['customer_id'])) {
-            $this->customer->setId($this->request->post['customer_id']);
-        }
+
         // Remove
         if (isset($this->request->post['key'])) {
             $this->cart->remove($this->request->post['key']);
