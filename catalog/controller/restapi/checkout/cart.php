@@ -4,6 +4,10 @@ class ControllerRestApiCheckoutCart extends Controller {
 
     public function __construct($registry) {
         parent::__construct($registry);
+
+//        $subscription = new Cart\Rcart($registry);
+//        $registry->set('cart', $subscription);
+
         if (isset($this->request->post['customer_id'])) {
             $this->customer->setId($this->request->post['customer_id']);
         }
@@ -168,6 +172,7 @@ class ControllerRestApiCheckoutCart extends Controller {
                 'taxes' => &$taxes,
                 'total' => &$total,
             );
+
 
             // Display prices
             if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
