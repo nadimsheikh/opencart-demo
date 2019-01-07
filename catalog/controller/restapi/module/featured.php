@@ -1,8 +1,8 @@
 <?php
 
-class ControllerExtensionModuleFeatured extends Controller {
+class ControllerRestApiModuleFeatured extends Controller {
 
-    public function index($setting) {
+    public function index() {
         $this->load->language('extension/module/featured');
 
         $this->load->model('catalog/product');
@@ -10,22 +10,36 @@ class ControllerExtensionModuleFeatured extends Controller {
         $this->load->model('tool/image');
 
         $data['products'] = array();
+        $data['status'] = true;
 
-        if (!$setting['limit']) {
-            $setting['limit'] = 4;
+        if (isset($this->request->post['limit'])) {
+            $limit = $this->request->post['limit'];
+        } else {
+            $limit = 10;
         }
 
-        if (!empty($setting['product'])) {
-            $products = array_slice($setting['product'], 0, (int) $setting['limit']);
+        if (isset($this->request->post['width'])) {
+            $width = $this->request->post['width'];
+        } else {
+            $width = 100;
+        }
+        if (isset($this->request->post['height'])) {
+            $height = $this->request->post['height'];
+        } else {
+            $height = 100;
+        }
+        $productsData = $this->model_catalog_product->getFeaturedProducts();
+        if ($productsData) {
+            $products = array_slice($productsData, 0, (int) $limit);
 
             foreach ($products as $product_id) {
                 $product_info = $this->model_catalog_product->getProduct($product_id);
 
                 if ($product_info) {
                     if ($product_info['image']) {
-                        $image = $this->model_tool_image->resize($product_info['image'], $setting['width'], $setting['height']);
+                        $image = $this->model_tool_image->resize($product_info['image'], $width, $height);
                     } else {
-                        $image = $this->model_tool_image->resize('placeholder.png', $setting['width'], $setting['height']);
+                        $image = $this->model_tool_image->resize('placeholder.png', $width, $height);
                     }
 
                     if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
@@ -61,15 +75,15 @@ class ControllerExtensionModuleFeatured extends Controller {
                         'special' => $special,
                         'tax' => $tax,
                         'rating' => $rating,
-                        'href' => $this->url->link('product/product', 'product_id=' . $product_info['product_id'])
                     );
                 }
             }
+        } else {
+            $data['status'] = false;
         }
 
-        if ($data['products']) {
-            return $this->load->view('extension/module/featured', $data);
-        }
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($data));
     }
 
 }

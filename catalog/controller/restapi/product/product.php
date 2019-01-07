@@ -316,7 +316,7 @@ class ControllerRestApiProductProduct extends Controller {
                 $json['error'] = $this->language->get('error_name');
             }
 
-            if ((utf8_strlen($this->request->post['text']) < 25) || (utf8_strlen($this->request->post['text']) > 1000)) {
+            if ((utf8_strlen($this->request->post['text']) < 10) || (utf8_strlen($this->request->post['text']) > 1000)) {
                 $json['error'] = $this->language->get('error_text');
             }
 

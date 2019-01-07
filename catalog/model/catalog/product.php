@@ -345,6 +345,18 @@ class ModelCatalogProduct extends Model {
         return $product_data;
     }
 
+    public function getFeaturedProducts() {
+        $products = array();
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "module m WHERE m.code='featured'");
+
+        if ($query->num_rows) {
+            $setting = json_decode($query->row['setting']);
+            $products = $setting->product;
+        }
+
+        return $products;
+    }
+
     public function getLatestProducts($limit) {
         $product_data = $this->cache->get('product.latest.' . (int) $this->config->get('config_language_id') . '.' . (int) $this->config->get('config_store_id') . '.' . $this->config->get('config_customer_group_id') . '.' . (int) $limit);
 
