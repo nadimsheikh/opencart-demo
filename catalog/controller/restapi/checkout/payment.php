@@ -221,7 +221,7 @@ class ControllerRestApiCheckoutPayment extends Controller {
                                 $json['payment_methods'][$result['code']] = $method;
                             }
                         } else {
-                            $json['payment_methods'][$result['code']] = $method;
+                            $json['payment_methods'][] = $method;
                         }
                     }
                 }

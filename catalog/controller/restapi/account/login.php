@@ -4,6 +4,17 @@ class ControllerRestApiAccountLogin extends Controller {
 
     private $error = array();
 
+    public function __construct($registry) {
+        parent::__construct($registry);
+
+        if (isset($this->request->post['language'])) {
+            $this->session->data['language'] = $this->request->post['language'];
+        }
+        if (isset($this->request->post['currency'])) {
+            $this->session->data['currency'] = $this->request->post['currency'];
+        }
+    }
+
     public function index() {
         $this->load->model('account/customer');
 

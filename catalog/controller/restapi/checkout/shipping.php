@@ -17,7 +17,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
 
     public function address() {
         $this->load->language('api/shipping');
-       
+
         // Delete old shipping address, shipping methods and method so not to cause any issues if there is an error
         unset($this->session->data['shipping_address']);
         unset($this->session->data['shipping_methods']);
@@ -161,7 +161,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
 
     public function methods() {
         $this->load->language('api/shipping');
-        
+
         // Delete past shipping methods and method just in case there is an error
         unset($this->session->data['shipping_methods']);
         unset($this->session->data['shipping_method']);
@@ -188,7 +188,19 @@ class ControllerRestApiCheckoutShipping extends Controller {
                         $quote = $this->{'model_extension_shipping_' . $result['code']}->getQuote($this->session->data['shipping_address']);
 
                         if ($quote) {
-                            $json['shipping_methods'][$result['code']] = array(
+                            $quoteData = array();
+                            foreach ($quote['quote'] as $quoteValue) {
+                                $quoteData[] = $quoteValue;
+                            }
+
+                            $json['shipping_methods'][] = array(
+                                'title' => $quote['title'],
+                                'quote' => $quoteData,
+                                'sort_order' => $quote['sort_order'],
+                                'error' => $quote['error']
+                            );
+
+                            $shipping_methods[$result['code']] = array(
                                 'title' => $quote['title'],
                                 'quote' => $quote['quote'],
                                 'sort_order' => $quote['sort_order'],
@@ -209,7 +221,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
                 $json['status'] = TRUE;
                 if ($json['shipping_methods']) {
                     $json['status'] = TRUE;
-                    $this->session->data['shipping_methods'] = $json['shipping_methods'];
+                    $this->session->data['shipping_methods'] = $shipping_methods;
                 } else {
                     $json['status'] = FALSE;
                     $json['error'] = $this->language->get('error_no_shipping');
@@ -226,7 +238,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
 
     public function method() {
         $this->load->language('api/shipping');
-       
+
         // Delete old shipping method so not to cause any issues if there is an error
         unset($this->session->data['shipping_method']);
 
