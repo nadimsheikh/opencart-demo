@@ -17,7 +17,7 @@ class ControllerRestApiCheckoutVoucher extends Controller {
 
     public function index() {
         $this->load->language('api/voucher');
-        
+
         // Delete past voucher in case there is an error
         unset($this->session->data['voucher']);
 
@@ -50,7 +50,7 @@ class ControllerRestApiCheckoutVoucher extends Controller {
 
     public function add() {
         $this->load->language('api/voucher');
-       
+
         $json = array();
 
         // Add keys for missing post vars

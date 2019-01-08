@@ -15,160 +15,46 @@ class ControllerRestApiCheckoutShipping extends Controller {
         }
     }
 
-    public function address() {
-        $this->load->language('api/shipping');
-
-        // Delete old shipping address, shipping methods and method so not to cause any issues if there is an error
-        unset($this->session->data['shipping_address']);
-        unset($this->session->data['shipping_methods']);
-        unset($this->session->data['shipping_method']);
-
-        $json = array();
-
-        if ($this->cart->hasShipping()) {
-
-            // Add keys for missing post vars
-            $keys = array(
-                'firstname',
-                'lastname',
-                'company',
-                'address_1',
-                'address_2',
-                'postcode',
-                'city',
-                'zone_id',
-                'country_id'
-            );
-
-            foreach ($keys as $key) {
-                if (!isset($this->request->post[$key])) {
-                    $this->request->post[$key] = '';
-                }
-            }
-
-            if ((utf8_strlen(trim($this->request->post['firstname'])) < 1) || (utf8_strlen(trim($this->request->post['firstname'])) > 32)) {
-                $json['error']['firstname'] = $this->language->get('error_firstname');
-            }
-
-            if ((utf8_strlen(trim($this->request->post['lastname'])) < 1) || (utf8_strlen(trim($this->request->post['lastname'])) > 32)) {
-                $json['error']['lastname'] = $this->language->get('error_lastname');
-            }
-
-            if ((utf8_strlen(trim($this->request->post['address_1'])) < 3) || (utf8_strlen(trim($this->request->post['address_1'])) > 128)) {
-                $json['error']['address_1'] = $this->language->get('error_address_1');
-            }
-
-            if ((utf8_strlen($this->request->post['city']) < 2) || (utf8_strlen($this->request->post['city']) > 32)) {
-                $json['error']['city'] = $this->language->get('error_city');
-            }
-
-            $this->load->model('localisation/country');
-
-            $country_info = $this->model_localisation_country->getCountry($this->request->post['country_id']);
-
-            if ($country_info && $country_info['postcode_required'] && (utf8_strlen(trim($this->request->post['postcode'])) < 2 || utf8_strlen(trim($this->request->post['postcode'])) > 10)) {
-                $json['error']['postcode'] = $this->language->get('error_postcode');
-            }
-
-            if ($this->request->post['country_id'] == '') {
-                $json['error']['country'] = $this->language->get('error_country');
-            }
-
-            if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {
-                $json['error']['zone'] = $this->language->get('error_zone');
-            }
-
-            // Custom field validation
-            $this->load->model('account/custom_field');
-
-            $custom_fields = $this->model_account_custom_field->getCustomFields($this->config->get('config_customer_group_id'));
-
-            foreach ($custom_fields as $custom_field) {
-                if ($custom_field['location'] == 'address') {
-                    if ($custom_field['required'] && empty($this->request->post['custom_field'][$custom_field['location']][$custom_field['custom_field_id']])) {
-                        $json['error']['custom_field' . $custom_field['custom_field_id']] = sprintf($this->language->get('error_custom_field'), $custom_field['name']);
-                    } elseif (($custom_field['type'] == 'text') && !empty($custom_field['validation']) && !filter_var($this->request->post['custom_field'][$custom_field['location']][$custom_field['custom_field_id']], FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => $custom_field['validation'])))) {
-                        $json['error']['custom_field' . $custom_field['custom_field_id']] = sprintf($this->language->get('error_custom_field'), $custom_field['name']);
-                    }
-                }
-            }
-
-            if (!$json) {
-                $this->load->model('localisation/country');
-
-                $country_info = $this->model_localisation_country->getCountry($this->request->post['country_id']);
-
-                if ($country_info) {
-                    $country = $country_info['name'];
-                    $iso_code_2 = $country_info['iso_code_2'];
-                    $iso_code_3 = $country_info['iso_code_3'];
-                    $address_format = $country_info['address_format'];
-                } else {
-                    $country = '';
-                    $iso_code_2 = '';
-                    $iso_code_3 = '';
-                    $address_format = '';
-                }
-
-                $this->load->model('localisation/zone');
-
-                $zone_info = $this->model_localisation_zone->getZone($this->request->post['zone_id']);
-
-                if ($zone_info) {
-                    $zone = $zone_info['name'];
-                    $zone_code = $zone_info['code'];
-                } else {
-                    $zone = '';
-                    $zone_code = '';
-                }
-
-                $this->session->data['shipping_address'] = array(
-                    'firstname' => $this->request->post['firstname'],
-                    'lastname' => $this->request->post['lastname'],
-                    'company' => $this->request->post['company'],
-                    'address_1' => $this->request->post['address_1'],
-                    'address_2' => $this->request->post['address_2'],
-                    'postcode' => $this->request->post['postcode'],
-                    'city' => $this->request->post['city'],
-                    'zone_id' => $this->request->post['zone_id'],
-                    'zone' => $zone,
-                    'zone_code' => $zone_code,
-                    'country_id' => $this->request->post['country_id'],
-                    'country' => $country,
-                    'iso_code_2' => $iso_code_2,
-                    'iso_code_3' => $iso_code_3,
-                    'address_format' => $address_format,
-                    'custom_field' => isset($this->request->post['custom_field']) ? $this->request->post['custom_field'] : array()
-                );
-
-                $json['status'] = TRUE;
-                $json['success'] = $this->language->get('text_address');
-
-                unset($this->session->data['shipping_method']);
-                unset($this->session->data['shipping_methods']);
-            } else {
-                $json['status'] = FALSE;
-                $json['success'] = $this->language->get('error_no_shipping');
-            }
-        } else {
-            $json['status'] = FALSE;
-            $json['success'] = $this->language->get('error_no_shipping');
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
-    }
-
     public function methods() {
         $this->load->language('api/shipping');
 
         // Delete past shipping methods and method just in case there is an error
         unset($this->session->data['shipping_methods']);
         unset($this->session->data['shipping_method']);
+        unset($this->session->data['shipping_address']);
 
         $json = array();
 
         if ($this->cart->hasShipping()) {
+
+            if (isset($this->request->post['address_id'])) {
+                $address_id = $this->request->post['address_id'];
+                $this->load->model('account/address');
+                $address_info = $this->model_account_address->getAddress($address_id);
+
+
+                $this->session->data['shipping_address'] = array(
+                    'firstname' => $address_info['firstname'],
+                    'lastname' => $address_info['lastname'],
+                    'company' => $address_info['company'],
+                    'address_1' => $address_info['address_1'],
+                    'address_2' => $address_info['address_2'],
+                    'postcode' => $address_info['postcode'],
+                    'city' => $address_info['city'],
+                    'zone_id' => $address_info['zone_id'],
+                    'zone' => $address_info['zone'],
+                    'zone_code' => $address_info['zone_code'],
+                    'country_id' => $address_info['country_id'],
+                    'country' => $address_info['country'],
+                    'iso_code_2' => $address_info['iso_code_2'],
+                    'iso_code_3' => $address_info['iso_code_3'],
+                    'address_format' => $address_info['address_format'],
+                    'custom_field' => isset($address_info['custom_field']) ? $address_info['custom_field'] : array()
+                );
+            } else {
+                $json['error'] = $this->language->get('error_address');
+            }
+
             if (!isset($this->session->data['shipping_address'])) {
                 $json['error'] = $this->language->get('error_address');
             }
@@ -221,6 +107,7 @@ class ControllerRestApiCheckoutShipping extends Controller {
                 $json['status'] = TRUE;
                 if ($json['shipping_methods']) {
                     $json['status'] = TRUE;
+                    $json['shipping_address'] = $this->session->data['shipping_address'];
                     $this->session->data['shipping_methods'] = $shipping_methods;
                 } else {
                     $json['status'] = FALSE;
