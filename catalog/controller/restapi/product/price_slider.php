@@ -59,6 +59,7 @@ class ControllerRestApiProductPriceSlider extends Controller {
             } else {
                 $results = $this->model_catalog_product->getMinMaxProduct();
 
+
                 foreach ($results as $result) {
                     if (!$min_max) {
                         $min_max = $result;
@@ -67,6 +68,8 @@ class ControllerRestApiProductPriceSlider extends Controller {
                     }
                 }
             }
+
+
 
             $data['status'] = TRUE;
             $data['price_slider_title'] = $this->config->get('module_price_slider_heading');

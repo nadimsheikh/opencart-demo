@@ -21,7 +21,7 @@ class ControllerRestApiProductCategory extends Controller {
         $this->load->model('catalog/category');
 
         $this->load->model('catalog/product');
-
+        $this->load->model('tool/image');
         $data['categories'] = array();
 
         $categories = $this->model_catalog_category->getCategories(0);
@@ -43,20 +43,48 @@ class ControllerRestApiProductCategory extends Controller {
                     foreach ($children2 as $child2) {
                         $filter_data2 = array('filter_category_id' => $child2['category_id'], 'filter_sub_category' => true);
 
+                        if ($child2['image']) {
+                            $popup = $this->model_tool_image->resize($child2['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_height'));
+                        } else {
+                            $popup = $this->model_tool_image->resize('placeholder.png', $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_height'));
+                        }
+
+                        if ($child2['image']) {
+                            $thumb = $this->model_tool_image->resize($child2['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_height'));
+                        } else {
+                            $thumb = $this->model_tool_image->resize('placeholder.png', $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_height'));
+                        }
+
                         $children_data2[] = array(
                             'category_id' => $child2['category_id'],
+                            'title' => $child2['name'],
                             'name' => $child2['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data2) . ')' : ''),
-                            'href' => $this->url->api_link('restapi/category/info', 'category_id=' . $child2['category_id'])
+                            'popup' => $popup,
+                            'thumb' => $thumb
                         );
                     }
 
                     $filter_data = array('filter_category_id' => $child['category_id'], 'filter_sub_category' => true);
 
+                    if ($child['image']) {
+                        $popup = $this->model_tool_image->resize($child['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_height'));
+                    } else {
+                        $popup = $this->model_tool_image->resize('placeholder.png', $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_height'));
+                    }
+
+                    if ($child['image']) {
+                        $thumb = $this->model_tool_image->resize($child['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_height'));
+                    } else {
+                        $thumb = $this->model_tool_image->resize('placeholder.png', $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_height'));
+                    }
+
                     $children_data[] = array(
                         'category_id' => $child['category_id'],
+                        'title' => $child['name'],
                         'name' => $child['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
-                        'href' => $this->url->api_link('restapi/category/info', 'category_id=' . $child['category_id']),
-                        'children' => $children_data2
+                        'children' => $children_data2,
+                        'popup' => $popup,
+                        'thumb' => $thumb
                     );
                 }
 
@@ -66,11 +94,27 @@ class ControllerRestApiProductCategory extends Controller {
                     'filter_sub_category' => true
                 );
 
+
+
+                if ($category['image']) {
+                    $popup = $this->model_tool_image->resize($category['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_height'));
+                } else {
+                    $popup = $this->model_tool_image->resize('placeholder.png', $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_height'));
+                }
+
+                if ($category['image']) {
+                    $thumb = $this->model_tool_image->resize($category['image'], $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_height'));
+                } else {
+                    $thumb = $this->model_tool_image->resize('placeholder.png', $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_width'), $this->config->get('theme_' . $this->config->get('config_theme') . '_image_thumb_height'));
+                }
+
                 $data['categories'][] = array(
                     'category_id' => $category['category_id'],
+                    'title' => $category['name'],
                     'name' => $category['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
                     'children' => $children_data,
-                    'href' => $this->url->api_link('restapi/category/info', 'category_id=' . $category['category_id'])
+                    'popup' => $popup,
+                    'thumb' => $thumb
                 );
             }
         } else {

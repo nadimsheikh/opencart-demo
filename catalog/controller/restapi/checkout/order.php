@@ -386,6 +386,7 @@ class ControllerRestApiCheckoutOrder extends Controller {
             $this->load->model('checkout/order');
 
             $json['order_id'] = $this->model_checkout_order->addOrder($order_data);
+            $json['total'] = $this->model_checkout_order->getOrderTotal($json['order_id']);
 
             // Set the order history
             if (isset($this->request->post['order_status_id'])) {

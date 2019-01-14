@@ -5,11 +5,16 @@ class ModelCatalogProduct extends Model {
     public function getMinMaxProduct($data = array()) {
 
         if (isset($data['filter_category_id'])) {
+
             $min_price = $this->db->query("SELECT MIN(ps.price) as min_special,MIN(p.price) as min_price FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p2c.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_special ps ON (ps.product_id = p.product_id) WHERE p2c.category_id = '" . (int) $data['filter_category_id'] . "'");
+
             $max_price = $this->db->query("SELECT MAX(p.price) as max,p.tax_class_id, (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int) $this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p2c.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_special ps ON (ps.product_id = p.product_id) WHERE p.price = (SELECT MAX(price) FROM " . DB_PREFIX . "product  p LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p2c.product_id = p.product_id) WHERE p2c.category_id = '" . (int) $data['filter_category_id'] . "' ) AND p2c.category_id = '" . (int) $data['filter_category_id'] . "'");
         } else {
+
             $min_price = $this->db->query("SELECT MIN(ps.price) as min_special,MIN(p.price) as min_price FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p2c.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_special ps ON (ps.product_id = p.product_id)");
-            $max_price = $this->db->query("SELECT MAX(p.price) as max,p.tax_class_id, (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int) $this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p2c.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_special ps ON (ps.product_id = p.product_id)");
+
+
+            $max_price = $this->db->query("SELECT MAX(p.price) as max,p.tax_class_id, MAX((SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int) $this->config->get('config_customer_group_id') . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1)) AS special FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p2c.product_id = p.product_id) LEFT JOIN " . DB_PREFIX . "product_special ps ON (ps.product_id = p.product_id)");
         }
 
         if (!empty($max_price->row['special'])) {
@@ -17,16 +22,15 @@ class ModelCatalogProduct extends Model {
         } else {
             $price = $max_price->row['max'];
         }
+
         $max = $this->tax->calculate($price, $max_price->row['tax_class_id'], $this->config->get('config_tax'));
+
         if (isset($min_price->row['min_special'])) {
             $min = $min_price->row['min_special'];
         } else {
             $min = $min_price->row['min_price'];
         }
-        if ($max != null) {
-            $max = round($max);
-            $max = $max + (10 - (substr($max, -1)));
-        }
+
         $min_max = array(
             'min' => $min,
             'max' => $max,
